@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Speech.Synthesis; // For Speaking
-using System.Speech.Recognition; // For Listening
-using System.Threading; // Keep the application running
+using System.Speech.Synthesis;
+using System.Speech.Recognition;
+using System.Threading;
 
 [assembly: System.Runtime.Versioning.SupportedOSPlatform("windows")]
 
@@ -16,64 +16,58 @@ namespace VoiceGame
 
 		static void Main(string[] args)
 		{
-			// Setup the number
 			targetNumber = new Random().Next(1, 101);
 
-			// Setup listening "grammar"
-			// Tell computer to ONLY listen for gameChoices 1 to 100
-			Choices gameChoices = new Choices();
-			int i;
-			for (i = 1; i <= 100; i++)
-			{
-				gameChoices.Add(i.ToString());
-			}
+			Choices choices = new Choices();
+			for (int i = 1; i <= 100; i++) choices.Add(i.ToString());
+			choices.Add("restart");
+			choices.Add("exit game");
 
-			gameChoices.Add("restart");
-			gameChoices.Add("exit game");
+			// GrammarBuilder creates a strict phonetic profile for higher accuracy
+			GrammarBuilder gb = new GrammarBuilder(choices);
+			listener.LoadGrammar(new Grammar(gb));
 
-			GrammarBuilder gb = new GrammarBuilder(gameChoices);
-			Grammar g = new Grammar(gb);
-
-			listener.LoadGrammar(g);
 			listener.SetInputToDefaultAudioDevice();
 			listener.SpeechRecognized += HandleSpeech;
 
-			// Start Game
-			Console.WriteLine("Game Started! Speak your guess (1-100)...");
-			Speak("Welcome to the voice guessing game. Speak a number from 1 to 100.");
+			Console.WriteLine("Game Active. Speak your guess CLEARLY (1-100)...");
+			Speak("Welcome to the Number Guessing Game. I have a number from 1 to 100. What is your guess?");
 
-			// Start listening in the background
 			listener.RecognizeAsync(RecognizeMode.Multiple);
 
-			// Kepp program running until game is over
 			while (!isGameOver)
 			{
 				Thread.Sleep(100);
 			}
-
-			Speak("Game exiting...");
-			Thread.Sleep(2000); // Give time to finish speaking
+			Speak("Thank you for playing.");
+			Console.WriteLine("Exiting...");
+			Thread.Sleep(1500);
 		}
 
 		static void HandleSpeech(object? sender, SpeechRecognizedEventArgs e)
 		{
-			string speech = e.Result.Text;
+			// Ignore low-confidence background noise
+			// This rating determines how confident the "listener" engine is with how it interpreted the spoken input. The higher the confidence, the better it heard your input, DOES NOT ACTUALLY DETERMINE THE ACCURACY OF THE INPUT.
+			if (e.Result.Confidence < 0.5) return;
 
-			if (speech == "restart")
+			string input = e.Result.Text;
+
+			if (input == "restart")
 			{
 				targetNumber = new Random().Next(1, 101);
-				Speak("Game reset. I have a new number. What is your guess?");
+				Speak("New number generated. Guess again.");
 				return;
 			}
 
-			if (speech == "exit game")
+			if (input == "exit game")
 			{
+				Speak("Thank you for playing.");
 				isGameOver = true;
 				return;
 			}
 
-			int guess = int.Parse(e.Result.Text);
-			Console.WriteLine($"You said: {guess}");
+			int guess = int.Parse(input);
+			Console.WriteLine($"Result: {guess} ({e.Result.Confidence:P0} confidence)");
 
 			if (guess > targetNumber)
 			{
@@ -85,14 +79,15 @@ namespace VoiceGame
 			}
 			else
 			{
-				speaker.Speak($"Correct! {guess} was the secret number. You Win!");
+				listener.RecognizeAsyncStop();
+				// Synchronous Speak prevents app closure before audio finishes
+				speaker.Speak($"Correct! {guess} was the number. You win!");
 				isGameOver = true;
 			}
 		}
 
 		static void Speak(string text)
 		{
-			// Use 'Immediate' to stop computer from talking over itself
 			speaker.SpeakAsync(text);
 		}
 	}
