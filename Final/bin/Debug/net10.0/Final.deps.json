@@ -1,0 +1,49 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "Final/1.0.0": {
+        "dependencies": {
+          "System.Speech": "10.0.3"
+        },
+        "runtime": {
+          "Final.dll": {}
+        }
+      },
+      "System.Speech/10.0.3": {
+        "runtime": {
+          "lib/net10.0/System.Speech.dll": {
+            "assemblyVersion": "10.0.0.3",
+            "fileVersion": "10.0.326.7603"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net10.0/System.Speech.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "10.0.0.3",
+            "fileVersion": "10.0.326.7603"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Final/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "System.Speech/10.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1n6Sn16yLtonZSK7tGzKiGnanuCs38kiE0EIbssNoC6+S8Bx2iih0jNcvU9KxNeRYwMQYXlQUVAUhrkYS+CSHQ==",
+      "path": "system.speech/10.0.3",
+      "hashPath": "system.speech.10.0.3.nupkg.sha512"
+    }
+  }
+}
