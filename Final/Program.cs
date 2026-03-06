@@ -51,7 +51,7 @@ namespace VoiceGame
 				Thread.Sleep(100);
 			}
 
-			Speak("You have won the game! Congratulations!");
+			Speak("Game exiting...");
 			Thread.Sleep(2000); // Give time to finish speaking
 		}
 
@@ -73,7 +73,6 @@ namespace VoiceGame
 			}
 
 			int guess = int.Parse(e.Result.Text);
-
 			Console.WriteLine($"You said: {guess}");
 
 			if (guess > targetNumber)
@@ -86,7 +85,7 @@ namespace VoiceGame
 			}
 			else
 			{
-				Speak($"Correct! {guess} was the secret number. You Win!");
+				speaker.Speak($"Correct! {guess} was the secret number. You Win!");
 				isGameOver = true;
 			}
 		}
